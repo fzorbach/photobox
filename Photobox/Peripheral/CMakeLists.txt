@@ -14,6 +14,7 @@ target_sources(
         EspHomeCameraLed.cpp
         EspHomeCameraLed.hpp
         IEspHomeClient.hpp
+        DummyCameraLed.hpp
 )
 
 target_include_directories(

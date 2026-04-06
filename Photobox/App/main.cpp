@@ -23,6 +23,7 @@
 #include <TriggerManager.hpp>
 #include <fmt/core.h>
 #include "CaptureManager.hpp"
+#include <DummyCameraLed.hpp>
 #include "SvgFontCache.hpp"
 #include "SystemStatusManager.hpp"
 
@@ -105,7 +106,7 @@ int main(int argc, char *argv[])
         }
 
         Instance<CameraLed> camera_led =
-            std::make_shared<EspHomeCameraLed>(std::make_unique<EspHomeClient>(camera_led_host));
+            std::make_shared<DummyCameraLed>();
         std::shared_ptr<ICamera> camera;
 
         if (not developer_mode)
