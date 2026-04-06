@@ -5,7 +5,9 @@
 #include "GPhoto2Integration.hpp"
 
 #include <QImage>
+#include <cstdlib>
 #include <fstream>
+#include <memory>
 #include <Pbox/Logger.hpp>
 #include "GPhoto2Context.hpp"
 
@@ -136,9 +138,9 @@ bool downloadRawAndClear(Context &context)
     while (true)
     {
         CameraEventType evtype;
-        void *data = nullptr;
+        std::unique_ptr<void, decltype([](auto *x) { std::free(x); })> data;
 
-        const int ret = gp_camera_wait_for_event(context.camera.get(), 100, &evtype, &data, context.context.get());
+        const int ret = gp_camera_wait_for_event(context.camera.get(), 100, &evtype, std::out_ptr(data), context.context.get());
 
         if (ret < GP_OK)
         {
@@ -148,13 +150,13 @@ bool downloadRawAndClear(Context &context)
 
         if (evtype == GP_EVENT_FILE_ADDED)
         {
-            auto *camera_file_path = static_cast<CameraFilePath *>(data);
+            const auto *camera_file_path = static_cast<CameraFilePath *>(data.get());
             LOG_INFO(logger_gphoto2(), "got file added event for path {}", camera_file_path->name);
 
             auto file = makeUniqueCameraFile();
             const auto file_get_ret_val = gp_camera_file_get(context.camera.get(),
-                                                             camera_file_path->folder,
-                                                             camera_file_path->name,
+                                                             &camera_file_path->folder[0],
+                                                             &camera_file_path->name[0],
                                                              GP_FILE_TYPE_NORMAL,
                                                              file.get(),
                                                              context.context.get());
@@ -178,15 +180,17 @@ bool downloadRawAndClear(Context &context)
 
             out_file.write(buffer, size);
             out_file.close();
-
-        } else if (evtype == GP_EVENT_TIMEOUT)
+        }
+        else if (evtype == GP_EVENT_TIMEOUT)
         {
             LOG_DEBUG(logger_gphoto2(), "got timeout event");
             return true;
-        } else if (evtype == GP_EVENT_CAPTURE_COMPLETE)
+        }
+        else if (evtype == GP_EVENT_CAPTURE_COMPLETE)
         {
             LOG_INFO(logger_gphoto2(), "got capture complete event");
-        } else if (evtype == GP_EVENT_UNKNOWN)
+        }
+        else if (evtype == GP_EVENT_UNKNOWN)
         {
             LOG_INFO(logger_gphoto2(), "got unknown event");
         }
