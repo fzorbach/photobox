@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "GPhoto2Integration.hpp"
+
 #include <QImage>
+#include <fstream>
 #include <Pbox/Logger.hpp>
 #include "GPhoto2Context.hpp"
 
@@ -129,7 +131,7 @@ std::optional<QImage> captureImage(Context &context)
 
     return image;
 }
-bool readUntilTimeout(Context &context)
+bool downloadRawAndClear(Context &context)
 {
     while (true)
     {
@@ -144,10 +146,53 @@ bool readUntilTimeout(Context &context)
             break;
         }
 
-        if (evtype == GP_EVENT_TIMEOUT)
+        if (evtype == GP_EVENT_FILE_ADDED)
+        {
+            auto *camera_file_path = static_cast<CameraFilePath *>(data);
+            LOG_INFO(logger_gphoto2(), "got file added event for path {}", camera_file_path->name);
+
+            auto file = makeUniqueCameraFile();
+            const auto file_get_ret_val = gp_camera_file_get(context.camera.get(),
+                                                             camera_file_path->folder,
+                                                             camera_file_path->name,
+                                                             GP_FILE_TYPE_NORMAL,
+                                                             file.get(),
+                                                             context.context.get());
+
+            if (file_get_ret_val < GP_OK)
+            {
+                LOG_ERROR(logger_gphoto2(), "could not get file: {}", file_get_ret_val);
+                return false;
+            }
+
+            const char *buffer{};
+            unsigned long int size{};
+            const auto size_result = gp_file_get_data_and_size(file.get(), &buffer, &size);
+            if (size_result < GP_OK)
+            {
+                LOG_DEBUG(logger_gphoto2(), "could not get size of file. result code: {}", size_result);
+                return false;
+            }
+
+            std::ofstream out_file(camera_file_path->name, std::ios::out | std::ios::binary);
+
+            out_file.write(buffer, size);
+            out_file.close();
+
+        } else if (evtype == GP_EVENT_TIMEOUT)
         {
             LOG_DEBUG(logger_gphoto2(), "got timeout event");
             return true;
+        } else if (evtype == GP_EVENT_CAPTURE_COMPLETE)
+        {
+            LOG_INFO(logger_gphoto2(), "got capture complete event");
+        } else if (evtype == GP_EVENT_UNKNOWN)
+        {
+            LOG_INFO(logger_gphoto2(), "got unknown event");
+        }
+        else
+        {
+            LOG_INFO(logger_gphoto2(), "unhandled event: {}", static_cast<int>(evtype));
         }
     }
 

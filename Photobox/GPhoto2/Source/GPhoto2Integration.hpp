@@ -16,5 +16,5 @@ std::optional<QImage> capturePreviewImage(Context &context);
 
 std::optional<QImage> captureImage(Context &context);
 
-bool readUntilTimeout(Context &context);
+bool downloadRawAndClear(Context &context);
 } // namespace Pbox::GPhoto2

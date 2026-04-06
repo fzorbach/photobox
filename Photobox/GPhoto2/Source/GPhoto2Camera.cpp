@@ -80,7 +80,7 @@ exec::task<void> GPhoto2Camera::asyncCaptureLoop()
                          }) //
                        | stdexec::continues_on(scheduler_->getWorkScheduler()) //
                        | stdexec::then([this, &context](auto hasValue) {
-                            return GPhoto2::readUntilTimeout(*context);
+                            return GPhoto2::downloadRawAndClear(*context);
                          })                           //
                        | exec::repeat_effect_until(); // todo: this now retries forever to capture a image.
                                                       // maybe retry_n times and emit an error?
