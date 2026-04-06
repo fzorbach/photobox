@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
-#include <Pbox/QStdexec.hpp>
+#undef emit
 #include <execpools/asio/asio_thread_pool.hpp>
+#include <Pbox/QStdexec.hpp>
 #include "Pbox/DisableCopyMove.hpp"
 namespace Pbox
 {

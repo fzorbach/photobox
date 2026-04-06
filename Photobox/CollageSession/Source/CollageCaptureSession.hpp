@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
+#include <exec/async_scope.hpp>
 #include <QImage>
 #include <QObject>
 #include <Pbox/DisableCopyMove.hpp>
-#include <exec/async_scope.hpp>
 #include "CollageSettings.hpp"
 #include "ICaptureSession.hpp"
 #include "ImageStorage.hpp"

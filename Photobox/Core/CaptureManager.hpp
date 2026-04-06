@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
-#include <QObject>
-#include <QtQmlIntegration>
-#include <Pbox/ObjectUniquePtr.hpp>
+#undef emit
+
 #include <exec/async_scope.hpp>
 #include "CaptureSessionFactory.hpp"
 #include "ICamera.hpp"
@@ -13,6 +12,11 @@
 #include "ImageProvider.hpp"
 #include "Pbox/Instance.hpp"
 #include "TriggerManager.hpp"
+
+#include <QObject>
+#include <QtQmlIntegration>
+#include <Pbox/ObjectUniquePtr.hpp>
+
 namespace Pbox
 {
 class Scheduler;

@@ -3,15 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
-#include <QAbstractEventDispatcher>
-#include <QMetaObject>
-#include <QObject>
-#include <QThread>
 #include <tuple>
 #include <type_traits>
 #include <stdexec/concepts.hpp>
 #include <stdexec/execution.hpp>
-
+#include <QAbstractEventDispatcher>
+#include <QMetaObject>
+#include <QObject>
+#include <QThread>
 namespace Pbox
 {
 

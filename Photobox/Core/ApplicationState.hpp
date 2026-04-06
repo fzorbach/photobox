@@ -3,14 +3,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
-#include <QObject>
-#include <QtQmlIntegration>
 #include <ICamera.hpp>
 #include <RemoteTrigger.hpp>
 #include "CaptureManager.hpp"
 #include "Pbox/Instance.hpp"
 #include "SystemStatusManager.hpp"
-
+#include <QObject>
+#include <QtQmlIntegration>
 namespace Pbox
 {
 class ApplicationState : public QObject
