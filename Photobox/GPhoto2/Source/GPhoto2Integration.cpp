@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <memory>
+#include <filesystem>
 #include <Pbox/Logger.hpp>
 #include "GPhoto2Context.hpp"
 
@@ -176,7 +177,9 @@ bool downloadRawAndClear(Context &context)
                 return false;
             }
 
-            std::ofstream out_file(camera_file_path->name, std::ios::out | std::ios::binary);
+            const std::filesystem::path base_path("/media/photobox/FOTOBOX");
+
+            std::ofstream out_file(base_path / &camera_file_path->name[0], std::ios::out | std::ios::binary);
 
             out_file.write(buffer, size);
             out_file.close();
