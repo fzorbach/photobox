@@ -59,11 +59,13 @@ void EspHomeClient::subscribeEvents()
 {
     if (sse_reply_ != nullptr)
     {
-        sse_reply_->abort();
         LOG_DEBUG(logger_esphome_client(), "Network reply was still active. Stopping it.");
+        sse_reply_->abort();
+        LOG_DEBUG(logger_esphome_client(), "Active reply stopped.");
     }
     const auto request_url = base_url_.resolved(QStringLiteral("events"));
     QNetworkRequest request = prepareRequest(request_url);
+    LOG_INFO(logger_esphome_client(), "Sending GET request");
     sse_reply_ = net_manager_.get(request);
 
     connect(sse_reply_, &QNetworkReply::readyRead, this, [this]() {
