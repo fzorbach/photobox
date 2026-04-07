@@ -17,6 +17,7 @@ void SystemStatusClient::setSystemStatus(SystemStatusCode::Code code)
 {
     if (code_ != code)
     {
+        qInfo() << "System status changed" << name_ << code;
         code_ = code;
         Q_EMIT systemStatusChanged();
     }
