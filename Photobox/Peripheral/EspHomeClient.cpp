@@ -76,7 +76,7 @@ void EspHomeClient::subscribeEvents()
         Q_ASSERT(sse_reply_ != nullptr);
         if (sse_reply_->error() != QNetworkReply::NoError)
         {
-            constexpr std::chrono::milliseconds kRetryTime{1000};
+            constexpr std::chrono::milliseconds kRetryTime{500};
             LOG_ERROR(logger_esphome_client(),
                       "Network reply finished with error from {}: {}, retrying in {}ms",
                       request_url.toString().toStdString(),
