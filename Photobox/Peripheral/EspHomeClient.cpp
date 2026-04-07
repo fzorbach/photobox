@@ -82,8 +82,18 @@ void EspHomeClient::subscribeEvents()
                       request_url.toString().toStdString(),
                       QMetaEnum::fromType<QNetworkReply::NetworkError>().valueToKey(sse_reply_->error()),
                       kRetryTime.count());
+
             Q_EMIT connecting();
-            QTimer::singleShot(kRetryTime, this, &EspHomeClient::subscribeEvents);
+
+            if (sse_reply_->error() != QNetworkReply::OperationCanceledError)
+            {
+                LOG_INFO(logger_esphome_client(), "Retrying request in {} ms.", kRetryTime.count());
+                QTimer::singleShot(kRetryTime, this, &EspHomeClient::subscribeEvents);
+            }
+            else
+            {
+                LOG_INFO(logger_esphome_client(), "Reason was cancelation. Not retrying this one.");
+            }
             return;
         }
     });
